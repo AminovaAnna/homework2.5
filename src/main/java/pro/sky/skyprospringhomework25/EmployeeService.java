@@ -5,51 +5,51 @@ import pro.sky.skyprospringhomework25.exteptions.EmployeeAlreadyAddedException;
 import pro.sky.skyprospringhomework25.exteptions.EmployeeNotFoundException;
 import pro.sky.skyprospringhomework25.exteptions.EmployeeStorageIsFullException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EmployeeService {
     private final int MAX_COUNT = 10;
-    private final List<Employee> employees = new ArrayList<>(MAX_COUNT);
+    public Map<String, Employee> employees = new HashMap<>(MAX_COUNT);
 
 
-    public void addEmployee(String lastName, String firstName) {
+    public void addEmployee(String firstName, String lastName) throws EmployeeAlreadyAddedException {
         if (employees.size() >= MAX_COUNT) {
             throw new EmployeeStorageIsFullException();
         }
-        Employee employee = new Employee(lastName, firstName);
-        if (employees.contains(employee)) {
+        Employee employee = new Employee(firstName, lastName);
+        var key = makeKey(firstName, lastName);
+        if (employees.containsKey(key)) {
             throw new EmployeeAlreadyAddedException();
         }
-        employees.add(employee);
+        employees.put(key, employee);
 
     }
 
-    public void removeEmployee(String lastName, String firstName) {
-        for (Employee employee : employees) {
-            if (employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
-                employees.remove(employee);
-                return;
-            }
+    public void removeEmployee(String firstName, String lastName) {
+        var key = makeKey(firstName, lastName);
+        var removed = employees.remove(key);
+        if (removed == null) {
+            throw new EmployeeNotFoundException();
         }
-        throw new EmployeeNotFoundException();
-
+        employees.remove(key);
     }
 
-    public Employee findEmployee(String lastName, String firstName) {
-        for (Employee employee : employees) {
-            if (employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
-                return employee;
-            }
+    public Employee findEmployee(String firstName, String lastName) {
+        var key = makeKey(firstName, lastName);
+        var employee = employees.get(key);
+        if (employee != null) {
+           return employee;
         }
         throw new EmployeeNotFoundException();
     }
 
     public Collection<Employee> getAll() {
-        return Collections.unmodifiableCollection(employees);
+        return Collections.unmodifiableCollection(employees.values());
 
+    }
+
+    private static String makeKey(String firstName, String lastName) {
+        return (firstName + "_" + lastName).toLowerCase();
     }
 }

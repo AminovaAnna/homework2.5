@@ -7,9 +7,10 @@ public class Employee {
     private final String lastName;
 
 
-    public Employee(String lastName, String firstName) {
-        this.lastName = lastName;
+    public Employee(String firstName, String lastName) {
         this.firstName = firstName;
+        this.lastName = lastName;
+
     }
 
     public String getLastName() {
@@ -25,19 +26,20 @@ public class Employee {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return Objects.equals(lastName, employee.lastName) && Objects.equals(firstName, employee.firstName);
+        return Objects.equals(firstName, employee.firstName) && Objects.equals(lastName, employee.lastName);
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lastName, firstName);
+        return Objects.hash(firstName, lastName);
     }
 
     @Override
     public String toString() {
         return "Employee{" +
-                "lastName='" + lastName + '\'' +
-                ", firstName='" + firstName + '\'' +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 '}';
     }
 }
